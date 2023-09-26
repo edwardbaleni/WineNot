@@ -1,0 +1,246 @@
+
+
+# Multi-Objective Linear Programming
+
+```{r MultiObjective}
+Y <- X
+Y$constraint.P <- c(X$Price[1:4], -10, -10, -10)                    # minimize so >
+#Y$constraint.Alc <- c(X$Alc[1:4], -1, -1, -1)                 # minimize so >
+#Y$constraint.C <- c(X$C[1:4], -1, -1, -1)                     # minimize so >
+#Y$constraint.ResSugar <- c(X$ResidualSugar[1:4], -1, -1, -1)  # minimise so >
+#Y$constraint.Tan <- c(X$Tannins[1:4], -100, -100, -100)             # maximise so <
+#Y$constraint.An <- c(X$Anthocyanins[1:4], -100, -100, -100)         # maximise so <
+#Y$constraint.Tan <- c(1,1,1,1, -100, -100, -100)
+#Y$constraint.An <- c(1,1,1,1, , -100, -100)
+
+  # Objectives
+object1 <- Y$Price
+object2 <- Y$Alc
+object3 <- Y$C
+object4 <- Y$ResidualSugar
+object5 <- Y$Tannins
+object6 <- Y$Anthocyanins
+
+  # Constraints
+mat1 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$constraint.P,    # in terms of price
+            c(0,0,0,0,1,1,1),  # sum of the 3 integers < 3
+            c(1,0,0,0,0,0,0),  # must include CS
+            c(0,1,0,0,0,0,0),  # must include CF
+            c(0,0,1,0,0,0,0),  # must include CR
+            c(0,0,0,1,0,0,0),  # must include CR
+            c(1,1,1,1,0,0,0))  # these should add up to 1
+
+mat2 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$Price,#Y$constraint.Alc,     # in terms of alc
+            c(0,0,0,0,1,1,1),
+            c(1,0,0,0,0,0,0),
+            c(0,1,0,0,0,0,0),
+            c(0,0,1,0,0,0,0),
+            c(0,0,0,1,0,0,0),
+            c(1,1,1,1,0,0,0))
+
+mat3 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$Price,#Y$constraint.C,     # in terms of chroma
+            c(0,0,0,0,1,1,1),
+            c(1,0,0,0,0,0,0),
+            c(0,1,0,0,0,0,0),
+            c(0,0,1,0,0,0,0),
+            c(0,0,0,1,0,0,0),
+            c(1,1,1,1,0,0,0))
+
+mat4 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$Price,#Y$constraint.ResSugar,     # in terms of residual sugar
+            c(0,0,0,0,1,1,1),
+            c(1,0,0,0,0,0,0),
+            c(0,1,0,0,0,0,0),
+            c(0,0,1,0,0,0,0),
+            c(0,0,0,1,0,0,0),
+            c(1,1,1,1,0,0,0))
+
+mat5 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$Price,#Y$constraint.Tan,     # in terms of tannins
+            c(0,0,0,0,1,1,1),
+            c(1,0,0,0,0,0,0),
+            c(0,1,0,0,0,0,0),
+            c(0,0,1,0,0,0,0),
+            c(0,0,0,1,0,0,0),
+            c(1,1,1,1,0,0,0))
+
+mat6 = rbind(Y$pH,
+            Y$pH,
+            Y$Abrasiveness,
+            Y$Hardness,
+            Y$Dryness,
+            Y$Dryness,
+            Y$Bitterness,
+            Y$H,
+            Y$H,
+            #Y$Price,#Y$constraint.An,     # in terms of anthocyanins
+            c(0,0,0,0,1,1,1),    # sum of 3 integers < 3
+            c(1,0,0,0,0,0,0),    # must include CS
+            c(0,1,0,0,0,0,0),    # must include CR
+            c(0,0,1,0,0,0,0),    # must include ME 
+            c(0,0,0,1,0,0,0),    # must include CF
+            c(1,1,1,1,0,0,0))    # sum of proportions must be 1
+
+
+
+direct1=c(">",        # ph
+          "<",        # ph
+          ">",        # abras
+          "<",        # hard
+          ">",        # dry
+          "<",        # dry
+          ">",        # bitter
+          ">",        # hue
+          "<",        # hue
+          #">",        # Apply penalty for using add-ons
+          "<",        # sum of 3 integers <3
+          ">",       # must include cs
+          ">",       # must include CR
+          ">",       # must include ME
+          ">",       # must include CF
+          "==")       # sum of proportions must be 1
+
+direct2=c(">",
+          "<",
+          ">",
+          "<",
+          ">",
+          "<",
+          ">",
+          ">",
+          "<",
+          #"<", 
+          "<",
+          ">",
+          ">",
+          ">",
+          ">",
+          "==")
+
+rhs    =c(3.52, # ph
+          3.55, # ph
+          8,    # abras
+          10,   # hard
+          35,   # dry
+          38,   # dry
+          7.7,  # bitter
+          17,   # hue
+          18,   # hue
+          #0,    # Apply penalty for add-ons
+          5,    # sum of 3 integers <3
+          0.1,  # must include cs
+          0.01,  # must include CR
+          0.01,  # must include ME
+          0.01,  # must include CF
+          1)    # sum of proportions must be 1
+
+type<-c("C","C","C","C", "I", "I", "I")
+
+(ob1 <- Rglpk_solve_LP(obj=object1,
+               mat=mat1,
+               dir=direct1,
+               rhs=rhs,
+               types=type,max=T))
+
+(ob2 <- Rglpk_solve_LP(obj=object2,
+               mat=mat2,
+               dir=direct1,
+               rhs=rhs,
+               types=type,max=T))
+
+
+(ob3 <- Rglpk_solve_LP(obj=object3,
+               mat=mat3,
+               dir=direct1,
+               rhs=rhs,
+               types=type,max=T))
+
+(ob4 <- Rglpk_solve_LP(obj=object4,
+               mat=mat4,
+               dir=direct1,
+               rhs=rhs,
+               types=type,max=T))
+
+ob5 <- Rglpk_solve_LP(obj=object5,
+               mat=mat5,
+               dir=direct2,
+               rhs=rhs,
+               types=type,max=T)
+
+ob6 <- Rglpk_solve_LP(obj=object6,
+               mat=mat6,
+               dir=direct2,
+               rhs=rhs,
+               types=type,max=T)
+```
+
+```{r}
+a_price <- data.frame(matrix(c(ob1$solution%*%object1, ob1$solution%*%object2, ob1$solution%*%object3,
+                    ob1$solution%*%object4, ob1$solution%*%object5, ob1$solution%*%object6,
+                    ob2$solution%*%object1, ob2$solution%*%object2, ob2$solution%*%object3,
+                    ob2$solution%*%object4, ob2$solution%*%object5, ob2$solution%*%object6,
+                    ob3$solution%*%object1, ob3$solution%*%object2, ob3$solution%*%object3,
+                    ob3$solution%*%object4, ob3$solution%*%object5, ob3$solution%*%object6,
+                    ob4$solution%*%object1, ob4$solution%*%object2, ob4$solution%*%object3,
+                    ob4$solution%*%object4, ob4$solution%*%object5, ob4$solution%*%object6,
+                    ob5$solution%*%object1, ob5$solution%*%object2, ob5$solution%*%object3,
+                    ob5$solution%*%object4, ob5$solution%*%object5, ob5$solution%*%object6,
+                    ob6$solution%*%object1, ob6$solution%*%object2, ob6$solution%*%object3,
+                    ob6$solution%*%object4, ob6$solution%*%object5, ob6$solution%*%object6) ,nrow = 6, byrow = T))
+
+rownames(a_price) <- c("Price", "Alc", "Chroma", "ResSugar","Tannins", "Antho")
+colnames(a_price) <- c("Price", "Alc", "Chroma", "ResSugar","Tannins", "Antho")
+a_price
+```
+
+
+
+```{r MOLP Chebychev}
+
+```
+
+
+

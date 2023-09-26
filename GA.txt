@@ -1,0 +1,47 @@
+```{r Run GA}
+pop.in1 <- pop.in2 <- Y #init.pop(100,7, X)
+mat <- pop.in1
+# pop2 <- select.tournament(mat, fit, 4)
+# pop1 <- select.rank(mat, fit)
+
+fittest <- list()
+fit_mean <- list()
+gen <- 100
+for (i in 1:gen) {
+  # evaluate function
+  evals1 <- eval.pop(pop.in1, X)
+  evals2 <- eval.pop(pop.in2, X)
+  
+  # select by rank
+  nxt.parent.rank <-  select.rank(pop.in1, evals1)       
+  # select by tournament
+  nxt.parent.tourn <- select.tournament(pop.in2, evals2, 3)
+  
+  # cross over by uni     # can do by rank or tournament
+  offspring.cross.uni.rank <-  uni.cross(nxt.parent.rank)
+  # cross over by n-point
+  offspring.cross.n.tourn <- n.cross(nxt.parent.tourn)
+  
+  # Mutation
+  # By scramble
+  offspring.mut.scram.uni.rank1 <- scram.mut(offspring.cross.uni.rank[,1:4], 0.05, T) 
+  offspring.mut.scram.uni.rank2 <- scram.mut(offspring.cross.uni.rank[,5:7], 0.05, F) 
+  offspring.mut.scram.uni.rank <- cbind(offspring.mut.scram.uni.rank1, offspring.mut.scram.uni.rank2)
+  # By insert
+  offspring.mut.insert.n.tour1 <- insert.mut(offspring.cross.n.tourn[,1:4], 0.05, T)
+  offspring.mut.insert.n.tour2 <- insert.mut(offspring.cross.n.tourn[,5:7], 0.05, F)
+  offspring.mut.insert.n.tour <- cbind(offspring.mut.insert.n.tour1, offspring.mut.insert.n.tour2)
+  
+  # Replace
+  pop.in1 <-  offspring.mut.scram.uni.rank
+  pop.in2 <-  offspring.mut.insert.n.tour
+  
+  # Store
+  fittest[[i]] <- cbind(min(evals1), min(evals2))
+  fit_mean[[i]] <- cbind(mean(evals1), mean(evals2))
+}
+
+fit <- matrix(unlist(fit_mean), gen, 2, byrow = T)
+matplot(fit, col = c("red", "blue"), lwd = "2", type = "l", lty = 1, xlab = "Iteration")
+legend("right", c("Genetic Algroithm 1", "Genetic Algorithm 2"), col = c("red", "blue"), lty=c(1,1))
+```

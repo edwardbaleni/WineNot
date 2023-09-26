@@ -1,0 +1,18 @@
+TY  - JOUR
+AU  - Vismara, Philippe
+AU  - Coletta, Remi
+AU  - Trombettoni, Gilles
+PY  - 2016
+DA  - 2016/10/01
+TI  - Constrained global optimization for wine blending
+JO  - Constraints
+SP  - 597
+EP  - 615
+VL  - 21
+IS  - 4
+AB  - Assemblage consists in blending base wines in order to create target wines. Recent developments in aroma analysis allow us to measure chemical compounds impacting the taste of wines. This chemical analysis makes it possible to design a decision tool for the following problem: given a set of target wines, determine which volumes must be extracted from each base wine to produce wines that satisfy constraints on aroma concentration, volumes, alcohol contents and price. This paper describes the modeling of wine assemblage as a mixed constrained optimization problem, where the main goal is to minimize the gap to the desired concentrations for every aromatic criterion. The deterministic branch and bound solvers Couenne and IbexOpt behave well on the wine blending problem thanks to their interval constraint propagation/programming and polyhedral relaxation methods. We also study the performance of other optimization goals that could be embedded in a configuration tool, where the different possible interactions amount to solving the same constraints with different objective functions. We finally show on a recent generic wine blending instance that the proposed optimization process scales up well with the number of base wines.
+SN  - 1572-9354
+UR  - https://doi.org/10.1007/s10601-015-9235-5
+DO  - 10.1007/s10601-015-9235-5
+ID  - Vismara2016
+ER  - 
